@@ -90,6 +90,34 @@
                 this.validate();
 
                 return this;
+            },
+
+            //chainable method (returns this)
+            HTMLGreeting: function(selector, formal){
+
+                //check to see if jQuery if we even have jQuery
+                if(!$){
+                    throw 'jQuery not loaded!';
+                }
+
+                //check to see if we have a selector
+                if(!selector){
+                    throw 'missing jQuery selector';
+                }
+
+                var msg;
+                if(formal){
+                    msg = this.formalGreeting();
+                }
+                else{
+                    msg = this.greeting();
+                }
+
+                //use jQuery to set the html on given selector
+                $(selector).html(msg);
+
+                return this;
+                
             }
         };
 
