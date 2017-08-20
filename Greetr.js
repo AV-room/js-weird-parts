@@ -9,10 +9,92 @@
         
         }
 
-        //this is where we'll put methods that we'll want to use inside the object returned from Greetr
-        //we want this to be the prototype for all objects created from the Greetr.init function
-        Greetr.prototype = {};
+        //private variables (e.g. can't be accessed by Greetr.supportedLangs)
+        //accessible to created Greetr function by closure -- 2:30
+        var supportedLangs = ['en', 'es'];
 
+        var greetings = {
+            en: 'Hello',
+            es: 'Hola'
+        };
+
+        var formalGreetings = {
+            en: 'Greetings',
+            es: 'Saludos'
+        };
+
+        var logMessages = {
+            en: 'Logged in',
+            es: 'Inicio sesion'
+        };
+
+        //this is where we'll put methods that we'll want to use inside the object returned from Greetr
+        //this is a more efficient way to set up functionality across all Greetr instances
+        //  since they all share this prototype. We could define the methods inside Greetr.init but
+        //  that means each instance of Greetr would take memory space to hold the same definition.    
+        //we want this to be the prototype for all objects created from the Greetr.init function
+        Greetr.prototype = {
+            fullName: function(){
+                return this.firstName + ' ' + this.lastName;
+            },
+
+            //throw error if given language is not supported by our function
+            validate: function(){
+                if(supportedLangs.indexOf(this.language) === -1) {
+                    throw 'Invalid language';
+                }
+            },
+
+            greeting: function(){
+                return greetings[this.language] + ' ' + this.firstName + '!';
+            },
+
+            formalGreeting: function(){
+                return formalGreetings[this.language] + ', ' + this.fullName();
+            },
+
+            //chainable method (returns this)
+            greet: function(formal){
+                var msg;
+
+                if(formal){
+                    msg = this.formalGreeting();
+                }
+                else {
+                    msg = this.greeting();
+                }
+
+                if(console){
+                    console.log(msg);
+                }
+
+                //'this' refers to the calling object at execution time
+                //makes the method chainable
+                return this;
+            },
+
+            //chainable method (returns this)
+            log: function(){
+                
+                //if we have a console
+                if(console){
+                    console.log(logMessages[this.language] + ': ' + this.fullName());
+                }
+
+                return this;
+            },
+
+            //chainable method (returns this)
+            setLang: function(lang){
+                this.language = lang;
+                this.validate();
+
+                return this;
+            }
+        };
+
+        
+        //Greetr.init builds each new function object instance
         //ok to create this after actual call as return statement above won't be called until Greetr is actually used
         //this Greetr.init code should have been run by then
         Greetr.init = function(firstName, lastName, language){
